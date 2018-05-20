@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.company.enroller.exceptions.NoParticipantFoundException;
 import com.company.enroller.model.Participant;
 import com.company.enroller.persistence.ParticipantService;
 
@@ -44,7 +45,11 @@ public class ParticipantRestController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<?> delete(@PathVariable("id") String login) {
+        if (participantService.findByLogin(login) == null) {
+            throw new NoParticipantFoundException();
+        }
         Participant participant = participantService.findByLogin(login);
+
         participantService.delete(participant);
         return new ResponseEntity<Participant>(HttpStatus.NO_CONTENT);
     }
